@@ -1,6 +1,13 @@
 from itertools import chain
 
 import boto3
+import botocore.session
+
+
+def get_aws_regions() -> list[str]:
+    session = botocore.session.get_session()
+    available_regions = session.get_available_regions("ec2")
+    return available_regions
 
 
 def list_objects_under_prefix(prefix: str, bucket_name: str) -> list[str]:

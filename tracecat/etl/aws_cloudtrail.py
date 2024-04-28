@@ -13,16 +13,15 @@ from pathlib import Path
 from uuid import uuid4
 
 import boto3
-import botocore.session
 import orjson
 import polars as pl
 from tqdm.contrib.concurrent import thread_map
 
 from tracecat.config import TRACECAT__TRIAGE_DIR
-from tracecat.etl.aws_s3 import list_objects_under_prefix
+from tracecat.etl.aws_s3 import get_aws_regions, list_objects_under_prefix
 from tracecat.logger import standard_logger
 
-logger = standard_logger("runner.aws_cloudtrail")
+logger = standard_logger("integration.aws_cloudtrail")
 
 # Supress botocore info logs
 logging.getLogger("botocore").setLevel(logging.CRITICAL)
@@ -54,12 +53,6 @@ AWS_CLOUDTRAIL__JSON_FIELDS = [
     "requestParameters",
     "responseElements",
 ]
-
-
-def get_aws_regions() -> list[str]:
-    session = botocore.session.get_session()
-    available_regions = session.get_available_regions("ec2")
-    return available_regions
 
 
 def list_cloudtrail_objects_under_prefix(
